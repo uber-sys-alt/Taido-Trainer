@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TAIDO TRAINER</title>
+
+<style>
+body{
+    margin:0;
+    background:#111;
+    color:white;
+    font-family:sans-serif;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+
+.container{
+    text-align:center;
+    width:90%;
+    max-width:500px;
+}
+
+h1{
+    font-size:36px;
+    margin-bottom:20px;
+}
+
+input{
+    width:80px;
+    font-size:20px;
+    text-align:center;
+}
+
+button{
+    margin:10px;
+    padding:15px 35px;
+    font-size:20px;
+    border:none;
+    border-radius:12px;
+}
+
+.start{ background:#00c853; color:white; }
+.stop{ background:#d50000; color:white; }
+
+#msg{
+    margin-top:40px;
+    font-size:70px;
+    font-weight:bold;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🥋 TAIDO TRAINER</h1>
+
+<p>
+最小 <input id="min" type="number" value="2" step="0.5"> 秒
+</p>
+
+<p>
+最大 <input id="max" type="number" value="6" step="0.5"> 秒
+</p>
+
+<button class="start" onclick="start()">START</button>
+<button class="stop" onclick="stop()">STOP</button>
+
+<div id="msg">待機中</div>
+
+</div>
+
+<script>
+
+let running=false;
+let timer;
+let audioCtx;
+
+// ★ iPhone対策：最初のタップで必ず音を有効化
+function initAudio(){
+    if(!audioCtx){
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    audioCtx.resume();
+}
+
+// ★ 安定したピッ音
+function beep(){
+
+    if(!audioCtx){
+        initAudio();
+    }
+
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    osc.frequency.value = 1000;
+    gain.gain.value = 0.15;
+
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.12);
+}
+
+function loop(){
+
+    if(!running) return;
+
+    const min = parseFloat(document.getElementById("min").value);
+    const max = parseFloat(document.getElementById("max").value);
+
+    const wait = (Math.random()*(max-min)+min)*1000;
+
+    timer = setTimeout(()=>{
+
+        beep();
+
+        document.getElementById("msg").innerText = "⚡ 技！";
+
+        setTimeout(()=>{
+            document.getElementById("msg").innerText = "待機中";
+        },600);
+
+        loop();
+
+    }, wait);
+}
+
+function start(){
+
+    if(running) return;
+
+    initAudio(); // ★ここが超重要（iPhone対策）
+
+    running = true;
+    document.getElementById("msg").innerText = "開始";
+    loop();
+}
+
+function stop(){
+
+    running = false;
+    clearTimeout(timer);
+    document.getElementById("msg").innerText = "停止";
+}
+
+</script>
+
+</body>
+</html>

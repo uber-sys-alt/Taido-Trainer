@@ -56,6 +56,9 @@ button{
 
 <body>
 
+<!-- ★ ホイッスル音のオーディオ要素を追加 -->
+<audio id="whistleAudio" src="笛1.mp3" preload="auto"></audio>
+
 <div class="container">
 
 <h1>🥋 TAIDO TRAINER</h1>
@@ -83,45 +86,27 @@ button{
 
 let running=false;
 let timer;
-let audioCtx;
+let whistleSound;
 
-// ★ iPhone対策：最初のタップで必ず音を有効化
+// ★ iPhone対策：最初のタップで音声を読み込んで準備する
 function initAudio(){
-    if(!audioCtx){
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if(!whistleSound){
+        whistleSound = document.getElementById("whistleAudio");
     }
-    audioCtx.resume();
+    // 空再生、またはload()を呼ぶことでスマホの音再生制限を解除します
+    whistleSound.load();
 }
 
-// ★ 聞き取りやすい「ピッ！」音
-function beep(){
-
-    if(!audioCtx){
+// ★ ホイッスル音を再生する関数に変更
+function playWhistle(){
+    if(!whistleSound){
         initAudio();
     }
-
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-
-    osc.connect(gain);
-    gain.connect(audioCtx.destination);
-
-    // 高い音から少し下げる
-    osc.frequency.setValueAtTime(1800, audioCtx.currentTime);
-    osc.frequency.exponentialRampToValueAtTime(
-        1200,
-        audioCtx.currentTime + 0.12
-    );
-
-    // 音量も少し大きめ
-    gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(
-        0.001,
-        audioCtx.currentTime + 0.12
-    );
-
-    osc.start(audioCtx.currentTime);
-    osc.stop(audioCtx.currentTime + 0.12);
+    // 再生位置を先頭に戻してから再生（連続で鳴っても大丈夫なように）
+    whistleSound.currentTime = 0;
+    whistleSound.play().catch(e => {
+        console.log("オーディオ再生エラー:", e);
+    });
 }
 
 
@@ -136,7 +121,8 @@ function loop(){
 
     timer = setTimeout(()=>{
 
-        beep();
+        // ★ 電子音の代わりにホイッスルを鳴らす
+        playWhistle();
 
         document.getElementById("msg").innerText = "⚡ 技！";
 
@@ -174,6 +160,7 @@ function start(){
 
     if(running) return;
 
+    // STARTボタンを押した瞬間にスマホの音声制限を解除
     initAudio();
 
     running = true;

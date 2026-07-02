@@ -28,10 +28,20 @@ h1{
     margin-bottom:20px;
 }
 
+/* ★ ラベルと入力欄の見た目を微調整 */
+.input-group {
+    margin: 15px 0;
+    font-size: 18px;
+}
+
 input{
     width:80px;
     font-size:20px;
     text-align:center;
+    margin-left: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    padding: 5px;
 }
 
 button{
@@ -56,20 +66,20 @@ button{
 
 <body>
 
-<!-- ★ ホイッスル音のオーディオ要素を追加 -->
 <audio id="whistleAudio" src="笛1.mp3" preload="auto"></audio>
 
 <div class="container">
 
 <h1>🥋 TAIDO TRAINER</h1>
 
-<p>
-<input id="min" type="number" value="2" min="0.5" max="30" step="0.5">
-</p>
+<!-- ★ 最小・最大のテキスト表記を追加しました -->
+<div class="input-group">
+    <label>最小：<input id="min" type="number" value="2" min="0.5" max="30" step="0.5"> 秒</label>
+</div>
 
-<p>
-<input id="max" type="number" value="6" min="0.5" max="30" step="0.5">
-</p>
+<div class="input-group">
+    <label>最大：<input id="max" type="number" value="6" min="0.5" max="30" step="0.5"> 秒</label>
+</div>
 
 <button class="start" onclick="start()">START</button>
 <button class="stop" onclick="stop()">STOP</button>
@@ -88,21 +98,17 @@ let running=false;
 let timer;
 let whistleSound;
 
-// ★ iPhone対策：最初のタップで音声を読み込んで準備する
 function initAudio(){
     if(!whistleSound){
         whistleSound = document.getElementById("whistleAudio");
     }
-    // 空再生、またはload()を呼ぶことでスマホの音再生制限を解除します
     whistleSound.load();
 }
 
-// ★ ホイッスル音を再生する関数に変更
 function playWhistle(){
     if(!whistleSound){
         initAudio();
     }
-    // 再生位置を先頭に戻してから再生（連続で鳴っても大丈夫なように）
     whistleSound.currentTime = 0;
     whistleSound.play().catch(e => {
         console.log("オーディオ再生エラー:", e);
@@ -121,7 +127,6 @@ function loop(){
 
     timer = setTimeout(()=>{
 
-        // ★ 電子音の代わりにホイッスルを鳴らす
         playWhistle();
 
         document.getElementById("msg").innerText = "⚡ 技！";
@@ -160,7 +165,6 @@ function start(){
 
     if(running) return;
 
-    // STARTボタンを押した瞬間にスマホの音声制限を解除
     initAudio();
 
     running = true;

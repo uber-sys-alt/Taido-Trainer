@@ -93,7 +93,7 @@ function initAudio(){
     audioCtx.resume();
 }
 
-// ★ 安定したピッ音
+// ★ 聞き取りやすい「ピッ！」音
 function beep(){
 
     if(!audioCtx){
@@ -106,12 +106,24 @@ function beep(){
     osc.connect(gain);
     gain.connect(audioCtx.destination);
 
-    osc.frequency.value = 1000;
-    gain.gain.value = 0.15;
+    // 高い音から少し下げる
+    osc.frequency.setValueAtTime(1800, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(
+        1200,
+        audioCtx.currentTime + 0.12
+    );
 
-    osc.start();
+    // 音量も少し大きめ
+    gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(
+        0.001,
+        audioCtx.currentTime + 0.12
+    );
+
+    osc.start(audioCtx.currentTime);
     osc.stop(audioCtx.currentTime + 0.12);
 }
+
 
 function loop(){
 

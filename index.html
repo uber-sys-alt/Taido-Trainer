@@ -139,9 +139,30 @@ function loop(){
 
 function start(){
 
+    const error = document.getElementById("error");
+    error.innerText = "";
+
+    const min = parseFloat(document.getElementById("min").value);
+    const max = parseFloat(document.getElementById("max").value);
+
+    if (isNaN(min) || isNaN(max)) {
+        error.innerText = "エラー：最小値・最大値を入力してください。";
+        return;
+    }
+
+    if (min <= 0 || max <= 0) {
+        error.innerText = "エラー：0より大きい値を入力してください。";
+        return;
+    }
+
+    if (min > max) {
+        error.innerText = "エラー：最小値は最大値以下にしてください。";
+        return;
+    }
+
     if(running) return;
 
-    initAudio(); // ★ここが超重要（iPhone対策）
+    initAudio();
 
     running = true;
     document.getElementById("msg").innerText = "開始";

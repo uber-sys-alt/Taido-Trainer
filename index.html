@@ -156,6 +156,23 @@ function loop(){
     timer = setTimeout(()=>{
 
         playWhistle();
+        
+        if(mode === "count"){
+
+    currentCount++;
+
+    document.getElementById("countDisplay").innerText =
+        `${currentCount} / ${targetCount}`;
+
+    if(currentCount >= targetCount){
+
+        stop();
+
+        document.getElementById("msg").innerText = "終了！";
+
+        return;
+    }
+}
 
         document.getElementById("msg").innerText = "GO！";
 

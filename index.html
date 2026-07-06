@@ -211,6 +211,16 @@ if(mode === "count"){
     if(running) return;
 
     initAudio();
+    
+    currentCount = 0;
+
+if(mode === "count"){
+    targetCount = parseInt(document.getElementById("count").value);
+    document.getElementById("countDisplay").innerText =
+        `0 / ${targetCount}`;
+}else{
+    document.getElementById("countDisplay").innerText = "∞";
+}
 
     running = true;
     document.getElementById("msg").innerText = "開始";

@@ -44,6 +44,12 @@ input{
     padding: 5px;
 }
 
+select{
+    font-size:20px;
+    border-radius:6px;
+    padding:5px;
+}
+
 button{
     margin:10px;
     padding:15px 35px;
@@ -79,6 +85,24 @@ button{
 
 <div class="input-group">
     <label>最大：<input id="max" type="number" value="6" min="0.5" max="30" step="0.5"> 秒</label>
+</div>
+
+<div class="input-group">
+    <label>
+        モード：
+        <select id="mode" onchange="toggleCountInput()">
+            <option value="count">回数指定</option>
+            <option value="infinite">無限</option>
+        </select>
+    </label>
+</div>
+
+<div class="input-group" id="countGroup">
+    <label>
+        回数：
+        <input id="count" type="number" value="30" min="1" max="999">
+        回
+    </label>
 </div>
 
 <button class="start" onclick="start()">START</button>
@@ -180,6 +204,16 @@ function stop(){
     document.getElementById("msg").innerText = "停止";
     document.getElementById("error").innerText = "";
 }
+
+function toggleCountInput(){
+
+    const mode = document.getElementById("mode").value;
+
+    document.getElementById("countGroup").style.display =
+        mode === "count" ? "block" : "none";
+}
+
+toggleCountInput();
 
 </script>
 

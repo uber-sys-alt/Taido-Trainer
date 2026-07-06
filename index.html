@@ -176,6 +176,23 @@ function start(){
         error.innerText = "エラー：最小値・最大値を入力してください。";
         return;
     }
+    
+    const mode = document.getElementById("mode").value;
+
+if(mode === "count"){
+
+    const count = parseInt(document.getElementById("count").value);
+
+    if(isNaN(count)){
+        error.innerText = "エラー：回数を入力してください。";
+        return;
+    }
+
+    if(count < 1 || count > 500){
+        error.innerText = "エラー：回数は1〜500回で入力してください。";
+        return;
+    }
+}
 
     if (min <= 0 || max <= 0) {
         error.innerText = "エラー：0より大きい値を入力してください。";

@@ -28,7 +28,6 @@ h1{
     margin-bottom:20px;
 }
 
-/* ★ ラベルと入力欄の見た目を微調整 */
 .input-group {
     margin: 15px 0;
     font-size: 18px;
@@ -56,6 +55,7 @@ button{
     font-size:20px;
     border:none;
     border-radius:12px;
+    cursor: pointer;
 }
 
 .start{ background:#00c853; color:white; }
@@ -78,7 +78,6 @@ button{
 
 <h1>🥋 TAIDO TRAINER</h1>
 
-<!-- ★ 最小・最大のテキスト表記を追加しました -->
 <div class="input-group">
     <label>最小：<input id="min" type="number" value="2" min="0.5" max="30" step="0.5"> 秒</label>
 </div>
@@ -108,13 +107,11 @@ button{
 <button class="start" onclick="start()">START</button>
 <button class="stop" onclick="stop()">STOP</button>
 
-<div id="countDisplay"
-     style="font-size:26px; margin-top:10px;">
+<div id="countDisplay" style="font-size:26px; margin-top:10px;">
 0 / 0
 </div>
 
-<div id="error"
-     style="color:#ff5252; font-size:18px; margin-top:10px; min-height:24px;">
+<div id="error" style="color:#ff5252; font-size:18px; margin-top:10px; min-height:24px;">
 </div>
 
 <div id="msg">構え</div>
@@ -154,6 +151,8 @@ function loop(){
 
     const min = parseFloat(document.getElementById("min").value);
     const max = parseFloat(document.getElementById("max").value);
+    // 【修正】loop内でも現在のモードを取得するようにしました
+    const mode = document.getElementById("mode").value;
 
     const wait = (Math.random()*(max-min)+min)*1000;
 
@@ -162,25 +161,21 @@ function loop(){
         playWhistle();
         
         if(mode === "count"){
+            currentCount++;
+            document.getElementById("countDisplay").innerText = `${currentCount} / ${targetCount}`;
 
-    currentCount++;
-
-    document.getElementById("countDisplay").innerText =
-        `${currentCount} / ${targetCount}`;
-
-    if(currentCount >= targetCount){
-
-        stop();
-
-        document.getElementById("msg").innerText = "終了！";
-
-        return;
-    }
-}
+            if(currentCount >= targetCount){
+                stop();
+                document.getElementById("msg").innerText = "終了！";
+                return;
+            }
+        }
 
         document.getElementById("msg").innerText = "GO！";
 
         setTimeout(()=>{
+            // 終了後に「構え」に戻るのを防ぐため、停止中は実行しない
+            if(!running) return; 
             document.getElementById("msg").innerText = "構え";
         },600);
 
@@ -203,22 +198,21 @@ function start(){
         return;
     }
     
-    const mode = document.getElementById("mode").value;
+    // 【修正】2回目の「const mode = ...」の重複宣言を削除しました
 
-if(mode === "count"){
+    if(mode === "count"){
+        const count = parseInt(document.getElementById("count").value);
 
-    const count = parseInt(document.getElementById("count").value);
+        if(isNaN(count)){
+            error.innerText = "エラー：回数を入力してください。";
+            return;
+        }
 
-    if(isNaN(count)){
-        error.innerText = "エラー：回数を入力してください。";
-        return;
+        if(count < 1 || count > 500){
+            error.innerText = "エラー：回数は1〜500回で入力してください。";
+            return;
+        }
     }
-
-    if(count < 1 || count > 500){
-        error.innerText = "エラー：回数は1〜500回で入力してください。";
-        return;
-    }
-}
 
     if (min <= 0 || max <= 0) {
         error.innerText = "エラー：0より大きい値を入力してください。";
@@ -236,13 +230,12 @@ if(mode === "count"){
     
     currentCount = 0;
 
-if(mode === "count"){
-    targetCount = parseInt(document.getElementById("count").value);
-    document.getElementById("countDisplay").innerText =
-        `0 / ${targetCount}`;
-}else{
-    document.getElementById("countDisplay").innerText = "∞";
-}
+    if(mode === "count"){
+        targetCount = parseInt(document.getElementById("count").value);
+        document.getElementById("countDisplay").innerText = `0 / ${targetCount}`;
+    }else{
+        document.getElementById("countDisplay").innerText = "∞";
+    }
 
     running = true;
     document.getElementById("msg").innerText = "開始";
@@ -250,7 +243,6 @@ if(mode === "count"){
 }
 
 function stop(){
-
     running = false;
     clearTimeout(timer);
 
@@ -259,11 +251,8 @@ function stop(){
 }
 
 function toggleCountInput(){
-
     const mode = document.getElementById("mode").value;
-
-    document.getElementById("countGroup").style.display =
-        mode === "count" ? "block" : "none";
+    document.getElementById("countGroup").style.display = mode === "count" ? "block" : "none";
 }
 
 toggleCountInput();

@@ -78,30 +78,32 @@ button{
 
 <h1>🥋 TAIDO TRAINER</h1>
 
-<div class="input-group">
-    <label>最小：<input id="min" type="number" value="2" min="0.5" max="30" step="0.5"> 秒</label>
-</div>
+<div id="settings">
+    <div class="input-group">
+        <label>最小：<input id="min" type="number" value="2" min="0.5" max="30" step="0.5"> 秒</label>
+    </div>
 
-<div class="input-group">
-    <label>最大：<input id="max" type="number" value="6" min="0.5" max="30" step="0.5"> 秒</label>
-</div>
+    <div class="input-group">
+        <label>最大：<input id="max" type="number" value="6" min="0.5" max="30" step="0.5"> 秒</label>
+    </div>
 
-<div class="input-group">
-    <label>
-        モード：
-        <select id="mode" onchange="toggleCountInput()">
-            <option value="count">回数指定</option>
-            <option value="infinite">無限</option>
-        </select>
-    </label>
-</div>
+    <div class="input-group">
+        <label>
+            モード：
+            <select id="mode" onchange="toggleCountInput()">
+                <option value="count">回数指定</option>
+                <option value="infinite">無限</option>
+            </select>
+        </label>
+    </div>
 
-<div class="input-group" id="countGroup">
-    <label>
-        回数：
-      <input id="count" type="number" value="10" min="1" max="500">
-        回
-    </label>
+    <div class="input-group" id="countGroup">
+        <label>
+            回数：
+          <input id="count" type="number" value="10" min="1" max="500">
+            回
+        </label>
+    </div>
 </div>
 
 <button class="start" onclick="start()">START</button>
@@ -151,7 +153,6 @@ function loop(){
 
     const min = parseFloat(document.getElementById("min").value);
     const max = parseFloat(document.getElementById("max").value);
-    // 【修正】loop内でも現在のモードを取得するようにしました
     const mode = document.getElementById("mode").value;
 
     const wait = (Math.random()*(max-min)+min)*1000;
@@ -165,6 +166,7 @@ function loop(){
             document.getElementById("countDisplay").innerText = `${currentCount} / ${targetCount}`;
 
             if(currentCount >= targetCount){
+                // 【変更】回数指定で終了した時も入力欄を再表示させる
                 stop();
                 document.getElementById("msg").innerText = "終了！";
                 return;
@@ -174,7 +176,6 @@ function loop(){
         document.getElementById("msg").innerText = "GO！";
 
         setTimeout(()=>{
-            // 終了後に「構え」に戻るのを防ぐため、停止中は実行しない
             if(!running) return; 
             document.getElementById("msg").innerText = "構え";
         },600);
@@ -198,8 +199,6 @@ function start(){
         return;
     }
     
-    // 【修正】2回目の「const mode = ...」の重複宣言を削除しました
-
     if(mode === "count"){
         const count = parseInt(document.getElementById("count").value);
 
@@ -238,6 +237,10 @@ function start(){
     }
 
     running = true;
+
+    // 【追加】入力欄を非表示にする
+    document.getElementById("settings").style.display = "none";
+
     document.getElementById("msg").innerText = "開始";
     loop();
 }
@@ -245,6 +248,9 @@ function start(){
 function stop(){
     running = false;
     clearTimeout(timer);
+
+    // 【追加】ストップまたは終了時に入力欄を再表示する
+    document.getElementById("settings").style.display = "block";
 
     document.getElementById("msg").innerText = "停止";
     document.getElementById("error").innerText = "";

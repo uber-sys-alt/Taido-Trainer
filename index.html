@@ -108,11 +108,12 @@ button{
 <button class="start" onclick="start()">START</button>
 <button class="stop" onclick="stop()">STOP</button>
 
-<div id="error"
-    <div id="countDisplay"
+<div id="countDisplay"
      style="font-size:26px; margin-top:10px;">
 0 / 0
 </div>
+
+<div id="error"
      style="color:#ff5252; font-size:18px; margin-top:10px; min-height:24px;">
 </div>
 
@@ -122,9 +123,12 @@ button{
 
 <script>
 
-let running=false;
+let running = false;
 let timer;
 let whistleSound;
+
+let currentCount = 0;
+let targetCount = 0;
 
 function initAudio(){
     if(!whistleSound){
@@ -192,6 +196,7 @@ function start(){
 
     const min = parseFloat(document.getElementById("min").value);
     const max = parseFloat(document.getElementById("max").value);
+    const mode = document.getElementById("mode").value;
 
     if (isNaN(min) || isNaN(max)) {
         error.innerText = "エラー：最小値・最大値を入力してください。";
